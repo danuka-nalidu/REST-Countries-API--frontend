@@ -114,7 +114,6 @@ This will generate the production build and serve it for preview at [http://loca
 
 ## ✅ Deployment
 
-📌 Hosted on: [https://your-deployment-url.vercel.app](https://your-deployment-url.vercel.app)  
-_(Replace with your actual deployment URL)_
+📌 Hosted on: **[https://rest-countries-api-frontend-delta.vercel.app](https://rest-countries-api-frontend-delta.vercel.app)**
 
 ---
