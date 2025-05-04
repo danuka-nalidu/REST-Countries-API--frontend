@@ -1,0 +1,72 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Node modules
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+build/
+
+# Vite cache
+.vite/
+
+# Tailwind CSS output (if using JIT or watching with CLI)
+tailwind.config.js.backup.*
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor & IDE settings
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Parcel cache
+.cache/
+
+# Coverage reports
+coverage/
+
+# Test output
+jest-test-results.json
+
+# Storybook
+.out/
+.storybook-out/
+
+# Misc
+*.local
+*.tgz
+*.orig
+
+# Mac files
+.AppleDouble
+.LSOverride
