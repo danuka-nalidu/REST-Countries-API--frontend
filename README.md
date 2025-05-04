@@ -64,19 +64,28 @@ This will generate the production build and serve it for preview at [http://loca
 
 ## 🌐 REST Countries API Endpoints Used
 
-1. `GET /all` – Fetch all countries  
-2. `GET /name/{name}` – Search country by name  
-3. `GET /region/{region}` – Filter countries by region  
-4. `GET /alpha/{code}` – Fetch full details by code  
+1. `GET /all?fields=...` – Fetch all countries with limited fields for performance  
+2. `GET /name/{name}?fields=...` – Search country by name  
+3. `GET /region/{region}?fields=...` – Filter countries by region  
+4. `GET /subregion/{subregion}?fields=...` – Filter countries by subregion  
+5. `GET /currency/{currency}?fields=...` – Filter countries by currency  
+6. `GET /lang/{language}?fields=...` – Filter countries by language  
+7. `GET /capital/{capital}?fields=...` – Filter countries by capital  
+8. `GET /alpha/{code}` – Fetch full details by code  
 
 **Data used includes:**
 
 - Country Name  
+- Capital  
 - Population  
 - Region  
+- Subregion  
+- Flags  
+- CCA3 Code  
+- Borders  
+- Currencies  
 - Languages  
-- Capital  
-- Flag Image  
+- Top-Level Domain (TLD)  
 
 ---
 
