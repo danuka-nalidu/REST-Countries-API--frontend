@@ -2,6 +2,7 @@
 
 import { useParams, Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 import { ArrowLeftIcon, ExternalLinkIcon, HeartIcon } from "../components/Icons"
 import { fetchCountryByCode } from "../services/api"
 
@@ -94,7 +95,7 @@ const CountryDetail = ({ countries, addToFavorites, removeFromFavorites, isInFav
 
   const handleFavoriteToggle = () => {
     if (!isLoggedIn) {
-      alert("Please log in to manage favorites")
+      toast.error("Please log in to manage favorites")
       navigate('/login')
       return
     }
