@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
 import CountryDetail from "./pages/CountryDetail"
@@ -85,7 +87,7 @@ function App() {
   // Add country to favorites - now requires logged in user
   const addToFavorites = (country) => {
     if (!user) {
-      alert("Please log in to add favorites")
+      toast.error("Please log in to add favorites")
       return false
     }
     
@@ -97,6 +99,7 @@ function App() {
       if (user && user.email) {
         localStorage.setItem(`favorites_${user.email}`, JSON.stringify(newFavorites))
       }
+      toast.success(`${country.name.common} added to favorites`)
     }
     return true
   }
@@ -104,16 +107,21 @@ function App() {
   // Remove country from favorites - now requires logged in user
   const removeFromFavorites = (countryCode) => {
     if (!user) {
-      alert("Please log in to manage favorites")
+      toast.error("Please log in to manage favorites")
       return false
     }
     
+    const countryToRemove = favorites.find(country => country.cca3 === countryCode)
     const newFavorites = favorites.filter(country => country.cca3 !== countryCode)
     setFavorites(newFavorites)
     
     // Save to user-specific storage
     if (user && user.email) {
       localStorage.setItem(`favorites_${user.email}`, JSON.stringify(newFavorites))
+    }
+    
+    if (countryToRemove) {
+      toast.error(`${countryToRemove.name.common} removed from favorites`)
     }
     return true
   }
@@ -174,6 +182,18 @@ function App() {
             />
           </Routes>
         </div>
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </Router>
   )
