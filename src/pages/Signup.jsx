@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GlobeIcon, UserIcon } from "../components/Icons"
 
 const Signup = ({ setUser }) => {
@@ -20,6 +21,7 @@ const Signup = ({ setUser }) => {
     // Basic validation
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill in all fields")
+      toast.error("Please fill in all fields")
       return
     }
 
@@ -27,18 +29,21 @@ const Signup = ({ setUser }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address")
+      toast.error("Please enter a valid email address")
       return
     }
 
     // Password validation
     if (password.length < 6) {
       setError("Password must be at least 6 characters long")
+      toast.error("Password must be at least 6 characters long")
       return
     }
 
     // Password confirmation
     if (password !== confirmPassword) {
       setError("Passwords do not match")
+      toast.error("Passwords do not match")
       return
     }
 
@@ -56,6 +61,9 @@ const Signup = ({ setUser }) => {
       // Update user state which will activate the session
       setUser(newUser)
       setIsLoading(false)
+      
+      // Show success toast
+      toast.success(`Account created successfully! Welcome, ${name}!`)
       
       // Redirect to home page
       navigate('/')
