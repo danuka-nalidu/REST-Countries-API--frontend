@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import { HeartIcon } from "./Icons"
 
 const CountryCard = ({ country, addToFavorites, removeFromFavorites, isInFavorites, isLoggedIn }) => {
@@ -11,11 +12,13 @@ const CountryCard = ({ country, addToFavorites, removeFromFavorites, isInFavorit
     if (isFavorite) {
       const success = removeFromFavorites(country.cca3)
       if (!success && !isLoggedIn) {
+        toast.error("Please log in to manage favorites")
         navigate('/login')
       }
     } else {
       const success = addToFavorites(country)
       if (!success && !isLoggedIn) {
+        toast.error("Please log in to add favorites")
         navigate('/login')
       }
     }
