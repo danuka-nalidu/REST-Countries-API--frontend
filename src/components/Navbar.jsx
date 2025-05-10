@@ -19,7 +19,7 @@ const Navbar = ({ user, setUser }) => {
     // This now calls our enhanced setUser function (handleUserChange)
     // which will clear favorites and session data
     setUser(null)
-    toast.error("You have been logged out")
+    toast.success("You have been logged out")
     navigate("/")
   }
 
