@@ -1,10 +1,12 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { motion } from "framer-motion"
 import { SearchIcon } from "./Icons"
 
 const SearchBar = ({ onSearch, isLoading }) => {
   const [searchTerm, setSearchTerm] = useState("")
+  const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef(null)
 
   const handleChange = (e) => {
@@ -25,26 +27,45 @@ const SearchBar = ({ onSearch, isLoading }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full" onClick={focusInput}>
-      <div className="flex items-center bg-white rounded-lg shadow-md overflow-hidden transition-all hover:shadow-lg">
-        <button
+    <motion.form
+      onSubmit={handleSubmit}
+      className="relative w-full"
+      onClick={focusInput}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className={`flex items-center bg-white rounded-lg overflow-hidden transition-all ${
+          isFocused ? "shadow-lg ring-2 ring-blue-300" : "shadow-md hover:shadow-lg"
+        }`}
+        animate={{
+          boxShadow: isFocused
+            ? "0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 8px 10px -6px rgba(59, 130, 246, 0.1)"
+            : "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <motion.button
           type="submit"
-          className="pl-4 pr-2 py-3 text-gray-400 hover:text-gray-600 transition-colors"
+          className="pl-4 pr-2 py-3 text-gray-400 hover:text-blue-500 transition-colors"
           disabled={isLoading}
+          whileTap={{ scale: 0.9 }}
         >
           <SearchIcon className="h-5 w-5" />
-        </button>
+        </motion.button>
         <input
           ref={inputRef}
           type="text"
           placeholder="Search for a country..."
           value={searchTerm}
           onChange={handleChange}
-          className="w-full py-3 px-2 text-gray-700 focus:outline-none"
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          className="w-full py-4 px-2 text-gray-700 focus:outline-none"
           disabled={isLoading}
         />
-      </div>
-    </form>
+      </motion.div>
+    </motion.form>
   )
 }
 

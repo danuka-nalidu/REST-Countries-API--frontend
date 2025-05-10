@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
+import { motion } from "framer-motion"
 import SearchBar from "../components/SearchBar"
 import FilterControls from "../components/FilterControls"
 import CountryGrid from "../components/CountryGrid"
+import HeroSection from "../components/HeroSection"
 import {
   fetchCountriesByName,
   fetchCountriesByRegion,
@@ -22,11 +24,12 @@ const Home = ({
   setError,
   addToFavorites,
   removeFromFavorites,
-  isInFavorites
+  isInFavorites,
 }) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeFilters, setActiveFilters] = useState({ type: "", value: "" })
   const searchTimeout = useRef(null)
+  const exploreRef = useRef(null)
 
   const handleSearch = (query) => {
     setSearchQuery(query)
@@ -48,7 +51,7 @@ const Home = ({
     searchTimeout.current = setTimeout(async () => {
       try {
         setIsLoading(true)
-        let data = await fetchCountriesByName(query)
+        const data = await fetchCountriesByName(query)
         // Optional: sort alphabetically
         data.sort((a, b) => a.name.common.localeCompare(b.name.common))
         setFilteredCountries(data)
@@ -96,9 +99,7 @@ const Home = ({
       }
       // further filter by search query if present
       if (searchQuery) {
-        data = data.filter((c) =>
-          c.name.common.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+        data = data.filter((c) => c.name.common.toLowerCase().includes(searchQuery.toLowerCase()))
       }
       setFilteredCountries(data)
       setIsLoading(false)
@@ -109,6 +110,29 @@ const Home = ({
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    // Add smooth scrolling to the explore section
+    const handleStartExploring = () => {
+      if (exploreRef.current) {
+        exploreRef.current.scrollIntoView({ behavior: "smooth" })
+      }
+    }
+
+    const exploreButton = document.querySelector('a[href="#explore"]')
+    if (exploreButton) {
+      exploreButton.addEventListener("click", (e) => {
+        e.preventDefault()
+        handleStartExploring()
+      })
+    }
+
+    return () => {
+      if (exploreButton) {
+        exploreButton.removeEventListener("click", handleStartExploring)
+      }
+    }
+  }, [])
 
   if (error) {
     return (
@@ -126,8 +150,17 @@ const Home = ({
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Explore Countries</h1>
+      <HeroSection />
+
+      <div id="explore" ref={exploreRef} className="mb-12">
+        <motion.h1
+          className="text-3xl font-bold text-gray-800 mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Explore Countries
+        </motion.h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <SearchBar onSearch={handleSearch} isLoading={isLoading} />
@@ -138,13 +171,27 @@ const Home = ({
         </div>
       </div>
 
-      <CountryGrid 
-        countries={countries} 
-        isLoading={isLoading} 
+      <CountryGrid
+        countries={countries}
+        isLoading={isLoading}
         addToFavorites={addToFavorites}
         removeFromFavorites={removeFromFavorites}
         isInFavorites={isInFavorites}
       />
+
+      <motion.div
+        className="mt-16 p-8 bg-blue-50 rounded-xl text-center"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        viewport={{ once: true, margin: "-100px" }}
+      >
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Did You Know?</h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          There are 195 countries in the world today. This total comprises 193 countries that are member states of the
+          United Nations and 2 countries that are non-member observer states: the Holy See and the State of Palestine.
+        </p>
+      </motion.div>
     </div>
   )
 }

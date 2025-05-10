@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDownIcon } from "./Icons"
 
 const FilterBar = ({ onFilter, filterType, isLoading }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [selectedOption, setSelectedOption] = useState("")
+  const dropdownRef = useRef(null)
 
   const filterOptions = {
     region: ["Africa", "Americas", "Asia", "Europe", "Oceania"],
@@ -43,6 +45,19 @@ const FilterBar = ({ onFilter, filterType, isLoading }) => {
     setSelectedOption("")
   }, [filterType])
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
   const handleSelect = (option) => {
     setSelectedOption(option)
     onFilter(option, filterType)
@@ -56,36 +71,65 @@ const FilterBar = ({ onFilter, filterType, isLoading }) => {
   }
 
   return (
-    <div className="relative">
-      <button
+    <motion.div
+      className="relative"
+      ref={dropdownRef}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full bg-white shadow-md rounded-lg px-4 py-3 text-gray-700 hover:shadow-lg transition-all"
+        className={`flex items-center justify-between w-full bg-white rounded-lg px-4 py-4 text-gray-700 transition-all ${
+          isOpen ? "shadow-lg ring-2 ring-blue-300" : "shadow-md hover:shadow-lg"
+        }`}
         disabled={isLoading}
+        whileTap={{ scale: 0.98 }}
       >
-        <span>{selectedOption || `Filter by ${filterType}`}</span>
-        <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-      </button>
+        <span className={selectedOption ? "text-gray-800 font-medium" : "text-gray-500"}>
+          {selectedOption || `Filter by ${filterType}`}
+        </span>
+        <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}>
+          <ChevronDownIcon className="h-4 w-4" />
+        </motion.div>
+      </motion.button>
 
-      {isOpen && (
-        <div className="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
-          <button
-            onClick={handleReset}
-            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="absolute z-50 mt-1 w-full bg-white rounded-lg shadow-xl py-1 max-h-60 overflow-auto"
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.2 }}
           >
-            All {filterType}s
-          </button>
-          {options.map((option) => (
-            <button
-              key={option}
-              onClick={() => handleSelect(option)}
-              className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+            <motion.button
+              onClick={handleReset}
+              className="w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 transition-colors"
+              whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+              whileTap={{ backgroundColor: "rgba(59, 130, 246, 0.2)" }}
             >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+              All {filterType}s
+            </motion.button>
+
+            {options.map((option, index) => (
+              <motion.button
+                key={option}
+                onClick={() => handleSelect(option)}
+                className="w-full text-left px-4 py-3 text-gray-700 hover:bg-blue-50 transition-colors"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: index * 0.03 }}
+                whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+                whileTap={{ backgroundColor: "rgba(59, 130, 246, 0.2)" }}
+              >
+                {option}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   )
 }
 

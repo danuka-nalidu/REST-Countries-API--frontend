@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
+import { motion, AnimatePresence } from "framer-motion"
 import "react-toastify/dist/ReactToastify.css"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
@@ -19,6 +20,7 @@ function App() {
   const [error, setError] = useState(null)
   const [user, setUser] = useState(null)
   const [favorites, setFavorites] = useState([])
+  const [pageLoaded, setPageLoaded] = useState(false)
 
   // Initialize app - load countries and check for existing session
   useEffect(() => {
@@ -36,12 +38,12 @@ function App() {
     }
 
     getInitialCountries()
-    
+
     // Check for existing user session in localStorage
-    const savedUser = localStorage.getItem('currentUser')
+    const savedUser = localStorage.getItem("currentUser")
     if (savedUser) {
       setUser(JSON.parse(savedUser))
-      
+
       // Load user-specific favorites if user exists
       const userEmail = JSON.parse(savedUser).email
       const userFavorites = localStorage.getItem(`favorites_${userEmail}`)
@@ -49,6 +51,11 @@ function App() {
         setFavorites(JSON.parse(userFavorites))
       }
     }
+
+    // Set page loaded after initial data fetch
+    setTimeout(() => {
+      setPageLoaded(true)
+    }, 500)
   }, [])
 
   // Save favorites to localStorage whenever favorites change and user exists
@@ -62,9 +69,9 @@ function App() {
   const handleUserChange = (newUser) => {
     if (newUser) {
       // User logged in - store in localStorage
-      localStorage.setItem('currentUser', JSON.stringify(newUser))
+      localStorage.setItem("currentUser", JSON.stringify(newUser))
       setUser(newUser)
-      
+
       // Load user-specific favorites if they exist
       const userFavorites = localStorage.getItem(`favorites_${newUser.email}`)
       if (userFavorites) {
@@ -79,7 +86,7 @@ function App() {
         // but clear them from the current session
         setFavorites([])
       }
-      localStorage.removeItem('currentUser')
+      localStorage.removeItem("currentUser")
       setUser(null)
     }
   }
@@ -90,11 +97,11 @@ function App() {
       toast.error("Please log in to add favorites")
       return false
     }
-    
-    if (!favorites.some(fav => fav.cca3 === country.cca3)) {
+
+    if (!favorites.some((fav) => fav.cca3 === country.cca3)) {
       const newFavorites = [...favorites, country]
       setFavorites(newFavorites)
-      
+
       // Save to user-specific storage
       if (user && user.email) {
         localStorage.setItem(`favorites_${user.email}`, JSON.stringify(newFavorites))
@@ -110,16 +117,16 @@ function App() {
       toast.error("Please log in to manage favorites")
       return false
     }
-    
-    const countryToRemove = favorites.find(country => country.cca3 === countryCode)
-    const newFavorites = favorites.filter(country => country.cca3 !== countryCode)
+
+    const countryToRemove = favorites.find((country) => country.cca3 === countryCode)
+    const newFavorites = favorites.filter((country) => country.cca3 !== countryCode)
     setFavorites(newFavorites)
-    
+
     // Save to user-specific storage
     if (user && user.email) {
       localStorage.setItem(`favorites_${user.email}`, JSON.stringify(newFavorites))
     }
-    
+
     if (countryToRemove) {
       toast.error(`${countryToRemove.name.common} removed from favorites`)
     }
@@ -128,11 +135,35 @@ function App() {
 
   // Check if a country is in favorites
   const isInFavorites = (countryCode) => {
-    return favorites.some(country => country.cca3 === countryCode)
+    return favorites.some((country) => country.cca3 === countryCode)
   }
 
   return (
     <Router>
+      <AnimatePresence>
+        {!pageLoaded && (
+          <motion.div
+            className="fixed inset-0 bg-white z-50 flex items-center justify-center"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{
+                duration: 1.5,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+              }}
+            >
+              <div className="text-7xl">🌍</div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="min-h-screen bg-gray-50">
         <Navbar user={user} setUser={handleUserChange} />
         <div className="container mx-auto px-4 py-8">
@@ -155,34 +186,34 @@ function App() {
                 />
               }
             />
-            <Route 
-              path="/country/:code" 
+            <Route
+              path="/country/:code"
               element={
-                <CountryDetail 
-                  countries={countries} 
+                <CountryDetail
+                  countries={countries}
                   addToFavorites={addToFavorites}
                   removeFromFavorites={removeFromFavorites}
                   isInFavorites={isInFavorites}
                   isLoggedIn={!!user}
                 />
-              } 
+              }
             />
             <Route path="/login" element={<Login setUser={handleUserChange} />} />
             <Route path="/signup" element={<Signup setUser={handleUserChange} />} />
-            <Route 
-              path="/favorites" 
+            <Route
+              path="/favorites"
               element={
-                <Favorites 
-                  favorites={favorites} 
+                <Favorites
+                  favorites={favorites}
                   removeFromFavorites={removeFromFavorites}
                   isLoading={isLoading}
                   isLoggedIn={!!user}
                 />
-              } 
+              }
             />
           </Routes>
         </div>
-        <ToastContainer 
+        <ToastContainer
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
