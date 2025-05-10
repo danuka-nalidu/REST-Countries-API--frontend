@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { toast } from "react-toastify"
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GlobeIcon } from "../components/Icons"
 
 const Login = ({ setUser }) => {
@@ -18,6 +19,7 @@ const Login = ({ setUser }) => {
     // Basic validation
     if (!email || !password) {
       setError("Please fill in all fields")
+      toast.error("Please fill in all fields")
       return
     }
 
@@ -25,6 +27,7 @@ const Login = ({ setUser }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address")
+      toast.error("Please enter a valid email address")
       return
     }
 
@@ -42,6 +45,9 @@ const Login = ({ setUser }) => {
       // Update user state and activate session
       setUser(mockUser)
       setIsLoading(false)
+      
+      // Show success toast
+      toast.success(`Welcome back, ${mockUser.name}!`)
       
       // Redirect to home page
       navigate('/')
