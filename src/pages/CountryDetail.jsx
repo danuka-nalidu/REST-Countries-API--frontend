@@ -307,6 +307,25 @@ const CountryDetail = ({ countries, addToFavorites, removeFromFavorites, isInFav
           )}
         </div>
       </div>
+
+      {/* Map section */}
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Map View</h2>
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <div className="w-full h-[400px] overflow-hidden rounded-lg border border-gray-300">
+            <iframe
+              title={`Map of ${country.name.common}`}
+              className="w-full h-full"
+              frameBorder="0"
+              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(country.name.common)}`}
+              allowFullScreen
+            ></iframe>
+          </div>
+          <p className="text-sm text-gray-500 mt-2">
+            Interactive map of {country.name.common}. You may need to enable location services to view the map.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
